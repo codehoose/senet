@@ -951,9 +951,12 @@ MonoBehaviour:
   endBlock: {fileID: 4847955625550324166, guid: baad54c9c8e435a4883d65385c8ea7a9, type: 3}
   straightBlock: {fileID: 8795723841135050257, guid: 326f29e2790879d469a0de57b0bcd159, type: 3}
   topLeftBlock: {fileID: 7200825529184027168, guid: 9e5e1d4b8fee5ab47ab704622b7e662e, type: 3}
-  topRightBlock: {fileID: 6790898873733412612, guid: b5d0391d055ef8f4fa21b86d845205e9, type: 3}
+  topRightBlock: {fileID: 8617041422791547845, guid: b5d0391d055ef8f4fa21b86d845205e9, type: 3}
   bottomLeftBlock: {fileID: 7308116123262276611, guid: 445e3891b6e0fe844a9ea0068c957411, type: 3}
   bottomRightBlock: {fileID: 7303926718150620919, guid: 80e9e9348c8c9b64bb2e5bd6f432e223, type: 3}
+  redPawn: {fileID: 1803654590442381627, guid: 3cf206b0573381c46a4c39f46220b9a7, type: 3}
+  bluePawn: {fileID: 6038932889135807428, guid: e70e7dbc6724b0246af588cd7d0a65ec, type: 3}
+  spawnPawns: 1
 --- !u!4 &1095872176
 Transform:
   m_ObjectHideFlags: 0
