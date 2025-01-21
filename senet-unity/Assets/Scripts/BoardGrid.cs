@@ -34,7 +34,7 @@ public class BoardGrid : MonoBehaviour
         {
             if (i > 0 && (i % 10) == 0)
             {
-                x += gridSize;
+                x -= gridSize;
                 zDirection *= -1;
             }
             else
@@ -46,7 +46,7 @@ public class BoardGrid : MonoBehaviour
             go.name = $"Square {i}";
             go.transform.SetParent(transform);
             go.transform.position = Vector3.zero;
-            go.transform.localPosition = new Vector3(x, 0, z);
+            go.transform.localPosition = new Vector3(z, 0, x);
             blocks.Add(go.transform);
             if (spawnPawns && i < 10)
             {
@@ -62,7 +62,7 @@ public class BoardGrid : MonoBehaviour
     {
         var pawn = Instantiate(isRed ? redPawn : bluePawn, t);
         pawn.name = name;
-        StartCoroutine(DropPawn(pawn, Vector3.up * 20f, Vector3.up * 0.093f));
+        StartCoroutine(DropPawn(pawn, Vector3.up * 20f, Vector3.up * 0.02f));
     }
 
     IEnumerator DropPawn(GameObject go, Vector3 start, Vector3 end)
@@ -75,6 +75,8 @@ public class BoardGrid : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
+
+        go.transform.localPosition = end;
     }
 
     private GameObject GetPieceFromIndex(int index)
