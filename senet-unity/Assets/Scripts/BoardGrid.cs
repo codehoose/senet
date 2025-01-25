@@ -21,6 +21,8 @@ public class BoardGrid : MonoBehaviour
 
     private float gridSize = 1.02f;
 
+    public List<Transform> Blocks => blocks;
+
     IEnumerator Start()
     {
         blocks = new List<Transform>();

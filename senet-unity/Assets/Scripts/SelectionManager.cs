@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,11 +22,20 @@ public class SelectionManager : MonoBehaviour
 
     void Start()
     {
+        IsSelectionValid = IsSelectionValid ?? ((go) => true);
         state = SelectionState.None;
     }
 
+    public event EventHandler BlockSelected;
+    public Func<Transform, bool> IsSelectionValid; 
 
-    // Update is called once per frame
+    
+    public void ClearSelection()
+    {
+        selectionCursor.transform.localScale = new Vector3(1, 1, 1);
+        state = SelectionState.None;
+    }
+
     void Update()
     {
         if (state == SelectionState.Selected)
@@ -38,8 +48,7 @@ public class SelectionManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            selectionCursor.transform.localScale = new Vector3(1, 1, 1);
-            state = SelectionState.None;
+            ClearSelection();
         }
 
         if (!selectionAllowed || state == SelectionState.Selected) return;
@@ -52,6 +61,8 @@ public class SelectionManager : MonoBehaviour
         {
             if (hit.transform.tag == "PathBlock")
             {
+                if (!IsSelectionValid(hit.transform.parent)) return;
+
                 var transform = hit.transform.parent;
                 selectionCursor.transform.localPosition = Vector3.zero;
                 selectionCursor.transform.position = transform.position + Vector3.up * 0.2f;
