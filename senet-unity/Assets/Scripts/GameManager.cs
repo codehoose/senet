@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SelectionManager selectionManager;
     [SerializeField] private BoardGrid grid;
     [SerializeField] private AnimationCurve bounceAnimation;
+    [SerializeField] private DiceManager diceManager;
 
     private Player currentPlayer;
     private GameState gameState;
@@ -14,20 +15,27 @@ public class GameManager : MonoBehaviour
     private Transform currentBlock;
     private float dancerHeightOffGround = 0.02f;
 
-    void Start()
+    IEnumerator Start()
     {
         gameState = GameState.FirstMove;
         currentPlayer = Player.Blue;
         dancerMoveCount = 4;
         selectionManager.IsSelectionValid = IsSelectionValid;
+
+        while (!grid.Ready)
+        {
+            yield return null;
+        }
+
+        diceManager.ShowRollButton();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && currentBlock != null)
-        {
-            StartCoroutine(MoveDancer());
-        }
+        //if (Input.GetKeyDown(KeyCode.Space) && currentBlock != null)
+        //{
+        //    StartCoroutine(MoveDancer());
+        //}
     }
 
     private bool IsSelectionValid(Transform t)

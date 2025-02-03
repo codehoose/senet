@@ -23,6 +23,8 @@ public class BoardGrid : MonoBehaviour
 
     public List<Transform> Blocks => blocks;
 
+    public bool Ready { get; private set; }
+
     IEnumerator Start()
     {
         blocks = new List<Transform>();
@@ -58,6 +60,8 @@ public class BoardGrid : MonoBehaviour
             }
             yield return new WaitForSeconds(0.1f);
         }
+
+        Ready = true;
     }
 
     private void SpawnPawn(Transform t, bool isRed, string name)
