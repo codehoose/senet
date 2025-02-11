@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using EventHandler = System.EventHandler;
+using EventArgs = System.EventArgs;
 
 public class DiceManager : MonoBehaviour
 {
@@ -8,12 +10,15 @@ public class DiceManager : MonoBehaviour
     [SerializeField] private Image animatedDie;
     [SerializeField] private Sprite[] dieImages;
     [SerializeField] private Image lastRollImage;
+    [SerializeField] private bool doAnimation = true;
 
     public int LastRoll { get; private set; }
 
     public bool RollDieButtonVisible => rollDieButton.activeInHierarchy;
 
     public void ShowRollButton() => rollDieButton.SetActive(true);
+
+    public event EventHandler DiceRolled;
 
     void Start()
     {
@@ -28,7 +33,7 @@ public class DiceManager : MonoBehaviour
     IEnumerator RollTheDie()
     {
         float waitTime = 1 / 128f;
-        while (waitTime < 1.5f)
+        while (doAnimation && waitTime < 1.5f)
         {
             animatedDie.sprite = dieImages[Random.Range(0, dieImages.Length)];
             waitTime *= 2f;
@@ -36,12 +41,18 @@ public class DiceManager : MonoBehaviour
         }
 
         int newRoll = Random.Range(0, dieImages.Length);
-        LastRoll = newRoll < 4 ? newRoll : 6;
-        animatedDie.sprite = dieImages[Random.Range(0, dieImages.Length)];
+        LastRoll = newRoll < 4 ? newRoll + 1 : 6;
+
+        animatedDie.sprite = dieImages[newRoll];
         lastRollImage.sprite = animatedDie.sprite;
 
-        yield return new WaitForSeconds(2f);
+        if (doAnimation)
+        {
+            yield return new WaitForSeconds(2f);
+        }
         animatedDie.gameObject.SetActive(false);
         lastRollImage.gameObject.SetActive(true);
+
+        DiceRolled?.Invoke(this, EventArgs.Empty);
     }
 }

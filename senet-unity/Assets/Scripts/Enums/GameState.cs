@@ -1,4 +1,8 @@
 ﻿public enum GameState
 {
-    FirstMove
+    PlaceDancers,
+    FirstMove,
+    MoveDancer,
+    SelectDancer,
+    RollDice,
 }

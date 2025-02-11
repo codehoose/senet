@@ -1579,6 +1579,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1411c1f18384949459b260a1e08790f0, type: 3}
   - {fileID: 21300000, guid: 06e27abf14206a44ab6e6253f0f2b9d9, type: 3}
   lastRollImage: {fileID: 79740000}
+  doAnimation: 0
 --- !u!1001 &1367692871
 PrefabInstance:
   m_ObjectHideFlags: 0

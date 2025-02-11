@@ -72,6 +72,7 @@ public class SelectionManager : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     state = SelectionState.Selected;
+                    BlockSelected?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

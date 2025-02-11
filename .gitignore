@@ -4,3 +4,5 @@
 **/obj/
 **/Temp/
 **/Builds/
+**/*.dwlt
+senet-unity/UserSettings/

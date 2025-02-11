@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -17,7 +18,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Start()
     {
-        gameState = GameState.FirstMove;
+        diceManager.DiceRolled += Dice_Rolled;
+        selectionManager.BlockSelected += SelectionManager_BlockSelected;
+        gameState = GameState.PlaceDancers;
         currentPlayer = Player.Blue;
         dancerMoveCount = 4;
         selectionManager.IsSelectionValid = IsSelectionValid;
@@ -27,6 +30,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
+        gameState = GameState.FirstMove;
         diceManager.ShowRollButton();
     }
 
@@ -40,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     private bool IsSelectionValid(Transform t)
     {
+        if (GameStateDisallowsSelection()) return false;
         if (gameState == GameState.FirstMove && t.name != "Square 9") return false;
 
         var found = t.Find(currentPlayer.ToString()) != null;
@@ -47,8 +52,9 @@ public class GameManager : MonoBehaviour
         return found;
     }
 
-    private IEnumerator MoveDancer()
+    private IEnumerator MoveDancer(Action postMoveAction)
     {
+        gameState = GameState.MoveDancer;
         var index = int.Parse(currentBlock.name.Substring("Square ".Length));
         var dancer = currentBlock.Find(currentPlayer.ToString());
         var startBlock = currentBlock;
@@ -75,5 +81,41 @@ public class GameManager : MonoBehaviour
             startBlock = targetBlock;
         }
         selectionManager.ClearSelection();
+        postMoveAction?.Invoke();
     }
+
+
+    private void ChooseNextState()
+    {
+        gameState = GameState.RollDice;
+
+        if (!LastRollIsDoAgain())
+        {
+            currentPlayer = currentPlayer == Player.Blue ? Player.Red : Player.Blue;
+        }
+
+        // Do we need to do anything else here..?
+
+        // If not, roll the dice!
+        if (gameState == GameState.RollDice)
+        {
+            diceManager.ShowRollButton();
+        }
+    }
+
+    private bool LastRollIsDoAgain() => dancerMoveCount == 1 || dancerMoveCount == 4 || dancerMoveCount == 6;
+
+    private bool GameStateDisallowsSelection() => gameState == GameState.PlaceDancers || gameState == GameState.RollDice;
+
+    private void Dice_Rolled(object sender, EventArgs e)
+    {
+        dancerMoveCount = diceManager.LastRoll;
+        gameState = GameState.SelectDancer;
+    }
+
+    private void SelectionManager_BlockSelected(object sender, EventArgs e)
+    {
+        StartCoroutine(MoveDancer(ChooseNextState));
+    }
+
 }
