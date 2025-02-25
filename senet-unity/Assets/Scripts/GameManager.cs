@@ -9,12 +9,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BoardGrid grid;
     [SerializeField] private AnimationCurve bounceAnimation;
     [SerializeField] private DiceManager diceManager;
+    [SerializeField] private GameObject targetCursor;
+
+    [Header("Target cursor selection colours")]
+    [SerializeField] private Color goodSelection;
+    [SerializeField] private Color badSelection;
+
+    [Header("Dice roll colours")]
+    [SerializeField] private Color redColour;
+    [SerializeField] private Color blueColour;
 
     private Player currentPlayer;
     private GameState gameState;
     private int dancerMoveCount;
     private Transform currentBlock;
     private float dancerHeightOffGround = 0.02f;
+
+    private Color CurrentPlayerColour => currentPlayer == Player.Blue ? blueColour : redColour;
 
     IEnumerator Start()
     {
@@ -31,7 +42,7 @@ public class GameManager : MonoBehaviour
         }
 
         gameState = GameState.FirstMove;
-        diceManager.ShowRollButton();
+        diceManager.ShowRollButton(CurrentPlayerColour);
     }
 
     void Update()
@@ -42,14 +53,49 @@ public class GameManager : MonoBehaviour
         //}
     }
 
-    private bool IsSelectionValid(Transform t)
+    private SelectionMode IsSelectionValid(Transform t)
     {
-        if (GameStateDisallowsSelection()) return false;
-        if (gameState == GameState.FirstMove && t.name != "Square 9") return false;
+        if (GameStateDisallowsSelection() || (gameState == GameState.FirstMove && t.name != "Square 9"))
+        {
+            targetCursor.SetActive(false);
+            return SelectionMode.Invalid;
+        }
 
         var found = t.Find(currentPlayer.ToString()) != null;
         currentBlock = found ? t : null;
-        return found;
+
+        if (currentBlock != null)
+        {
+            var index = int.Parse(currentBlock.name.Substring("Square ".Length));
+            var newSquareName = $"Square {index + diceManager.LastRoll}";
+            var targetBlock = grid.Blocks.FirstOrDefault(block => block.name == newSquareName);
+
+            targetCursor.transform.localPosition = Vector3.zero;
+            targetCursor.transform.position = targetBlock.transform.position + Vector3.up * 0.2f;
+            targetCursor.transform.SetParent(transform);
+            targetCursor.SetActive(found);
+            
+            if (IsValidMove(currentBlock, targetBlock))
+            {
+                targetCursor.GetComponentInChildren<MeshRenderer>().material.color = goodSelection;
+            }
+            else
+            {
+                targetCursor.GetComponentInChildren<MeshRenderer>().material.color = badSelection;
+                return SelectionMode.CursorVisible;
+            }
+        }
+
+        return found ? SelectionMode.Valid : SelectionMode.Invalid;
+    }
+
+    private bool IsValidMove(Transform start, Transform end)
+    {
+        var dancerCurrent = GetDancerAt(start, currentPlayer.ToString());
+        var dancerTarget = GetDancerAt(end, currentPlayer.ToString());
+        if (dancerCurrent == dancerTarget) return false;
+
+        return true;
     }
 
     private IEnumerator MoveDancer(Action postMoveAction)
@@ -84,6 +130,13 @@ public class GameManager : MonoBehaviour
         postMoveAction?.Invoke();
     }
 
+    private string GetDancerAt(Transform t, string dancerName)
+    {
+        var transform = t.Find(dancerName);
+        if (transform == null) return "";
+        return transform.name;
+    }
+
 
     private void ChooseNextState()
     {
@@ -99,7 +152,7 @@ public class GameManager : MonoBehaviour
         // If not, roll the dice!
         if (gameState == GameState.RollDice)
         {
-            diceManager.ShowRollButton();
+            diceManager.ShowRollButton(CurrentPlayerColour);
         }
     }
 

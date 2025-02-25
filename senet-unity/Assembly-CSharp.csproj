@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Enums\GameState.cs" />
     <Compile Include="Assets\Scripts\DiceManager.cs" />
+    <Compile Include="Assets\Scripts\Enums\SelectionMode.cs" />
     <Compile Include="Assets\Scripts\SelectionManager.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\BoardGrid.cs" />

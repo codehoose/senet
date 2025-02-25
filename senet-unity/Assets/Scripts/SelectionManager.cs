@@ -22,12 +22,12 @@ public class SelectionManager : MonoBehaviour
 
     void Start()
     {
-        IsSelectionValid = IsSelectionValid ?? ((go) => true);
+        IsSelectionValid = IsSelectionValid ?? ((go) => SelectionMode.Valid);
         state = SelectionState.None;
     }
 
     public event EventHandler BlockSelected;
-    public Func<Transform, bool> IsSelectionValid; 
+    public Func<Transform, SelectionMode> IsSelectionValid; 
 
     
     public void ClearSelection()
@@ -61,7 +61,8 @@ public class SelectionManager : MonoBehaviour
         {
             if (hit.transform.tag == "PathBlock")
             {
-                if (!IsSelectionValid(hit.transform.parent)) return;
+                var selectionMode = IsSelectionValid(hit.transform.parent);
+                if (selectionMode == SelectionMode.Invalid) return;
 
                 var transform = hit.transform.parent;
                 selectionCursor.transform.localPosition = Vector3.zero;
@@ -69,7 +70,7 @@ public class SelectionManager : MonoBehaviour
                 selectionCursor.transform.SetParent(transform);
                 selectionCursorIsVisible = true;
 
-                if (Input.GetMouseButtonDown(0))
+                if (selectionMode == SelectionMode.Valid && Input.GetMouseButtonDown(0))
                 {
                     state = SelectionState.Selected;
                     BlockSelected?.Invoke(this, EventArgs.Empty);

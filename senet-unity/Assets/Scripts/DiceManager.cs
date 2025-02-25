@@ -16,9 +16,14 @@ public class DiceManager : MonoBehaviour
 
     public bool RollDieButtonVisible => rollDieButton.activeInHierarchy;
 
-    public void ShowRollButton() => rollDieButton.SetActive(true);
-
     public event EventHandler DiceRolled;
+
+    public void ShowRollButton(Color color)
+    {
+        rollDieButton.SetActive(true);
+        var image = rollDieButton.GetComponent<Image>();
+        image.color = color;
+    }
 
     void Start()
     {
